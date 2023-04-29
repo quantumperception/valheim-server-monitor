@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Valkyrie's Server Manager</title>
+    <style>
+      html {
+        display: flex;
+        height: 100%;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+      }
+      body {
+        display: flex;
+        height: 100%;
+        width: 100%;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: rgba(255, 255, 255, 0.9);
+        font-family: Play, sans-serif !important;
+        background: #2d2a3c;
+      }
+
+      .loader {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 150px;
+        height: 150px;
+      }
+      .loader div {
+        box-sizing: border-box;
+        display: block;
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        border: 2px solid #f62681;
+        border-radius: 50%;
+        animation: loader 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        border-color: #f62681 transparent transparent transparent;
+      }
+      .loader div:nth-child(1) {
+        animation-delay: -0.45s;
+      }
+      .loader div:nth-child(2) {
+        animation-delay: -0.3s;
+      }
+      .loader div:nth-child(3) {
+        animation-delay: -0.15s;
+      }
+      @keyframes loader {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+    <meta
+      name="keywords"
+      content="Responsive, HTML5, admin theme, business, professional, React, web design, CSS3, sass"
+    />
+  </head>
+  <body style="display: flex">
+    <script>
+      const serverStatus = document.createElement("div");
+      serverStatus.innerText = "Checking server status...";
+      serverStatus.style = "padding: 1rem";
+      const statusRequest = new XMLHttpRequest();
+      statusRequest.open("GET", "/status", true);
+      statusRequest.setRequestHeader("Content-Type", "application/json");
+      statusRequest.onreadystatechange = function () {
+        if (statusRequest.readyState == XMLHttpRequest.DONE) {
+          if (this.status == 200) {
+            serverStatus.innerText = statusRequest.responseText;
+          }
+        }
+      };
+      statusRequest.send();
+
+      const buttonContainer = document.createElement("div");
+      buttonContainer.style = "display: flex;";
+      const passwordInput = document.createElement("input");
+      passwordInput.type = "text";
+      passwordInput.placeholder = "Password";
+      passwordInput.style = "padding: 1rem; margin-bottom: 1rem";
+      const startServerButton = document.createElement("button");
+      const stopServerButton = document.createElement("button");
+      startServerButton.innerText = "Start Server";
+      startServerButton.onclick = () => {
+        const startRequest = new XMLHttpRequest();
+        startRequest.open("POST", "/start", true);
+        startRequest.setRequestHeader("Content-Type", "application/json");
+        startRequest.onreadystatechange = function () {
+          if (startRequest.readyState == XMLHttpRequest.DONE) {
+            if (this.status == 200) {
+              alert(startRequest.responseText);
+            }
+            if (this.status == 401) {
+              alert(startRequest.responseText);
+            }
+          }
+        };
+        startRequest.send(
+          JSON.stringify({
+            key: passwordInput.value,
+          })
+        );
+      };
+      startServerButton.style = "padding: 1rem; margin-right: 1rem";
+      stopServerButton.innerText = "Stop Server";
+      stopServerButton.onclick = () => {
+        const stopRequest = new XMLHttpRequest();
+        stopRequest.open("POST", "/stop", true);
+        stopRequest.setRequestHeader("Content-Type", "application/json");
+        stopRequest.onreadystatechange = function () {
+          if (stopRequest.readyState == XMLHttpRequest.DONE) {
+            if (this.status == 200) {
+              alert(stopRequest.responseText);
+            }
+            if (this.status == 401) {
+              alert(stopRequest.responseText);
+            }
+          }
+        };
+        stopRequest.send(
+          JSON.stringify({
+            key: passwordInput.value,
+          })
+        );
+      };
+      stopServerButton.style = "padding: 1rem";
+      document.body.appendChild(passwordInput);
+      document.body.appendChild(buttonContainer);
+      buttonContainer.appendChild(startServerButton);
+      buttonContainer.appendChild(stopServerButton);
+      document.body.appendChild(serverStatus);
+    </script>
+  </body>
+</html>
